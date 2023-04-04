@@ -10,14 +10,14 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import typeDefs from "./graphql/typeDefs.js";
 import resolvers from "./graphql/resolvers.js";
-
+import { MoralisIndexer } from "./indexer/index.js";
 // Required logic for integrating with Express
 const app = express();
 // Our httpServer handles incoming requests to our Express app.
 // Below, we tell Apollo Server to "drain" this httpServer,
 // enabling our servers to shut down gracefully.
 const httpServer = http.createServer(app);
-const MONGODB = `mongodb+srv://${process.env.MONGODB_USR}:${process.env.MONGODB_PWD}@music-nft-indexer-mongo.epw4hdg.mongodb.net/?retryWrites=true&w=majority`;
+const MONGODB = `mongodb+srv://${process.env.MONGODB_USR}:${process.env.MONGODB_PWD}@music-nft-indexer-mongo.epw4hdg.mongodb.net/music_nfts?retryWrites=true&w=majority`;
 
 // Same ApolloServer initialization as before, plus the drain plugin
 // for our httpServer.
@@ -49,4 +49,5 @@ console.log("MongoDB connected");
 await new Promise((resolve) =>
   httpServer.listen(port, undefined, undefined, () => resolve(0))
 );
+// new MoralisIndexer();
 console.log(`🚀 Server ready at http://localhost:${port}/`);

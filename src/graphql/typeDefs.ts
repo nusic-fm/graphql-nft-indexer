@@ -1,22 +1,66 @@
 const typeDefs = `#graphql
-  type Token {
-    name: String
-    address: String
-    tokenId: String
-  }
-  input TokenInput {
-    name: String
-    address: String
-    tokenId: String
-  }
+type TokenDoc {
+  collectionName: String
+  tokenId: String
+  tokenUrlMimeType: String
+  name: String
+  collectionAddress: String,
+  description: String,
+  lastRefreshTime: String,
+  metadata: String,
+  tokenStandard: String,
+  tokenUrl: String,
+  owner: String,
+}
+type TransactionInfo {
+    blockNumber: String
+    blockTimestamp: String
+    transactionHash: String
+}
+type Market {
+  marketAddress: String
+  marketType: String
+  status: String
+  tokenId: String
+  transactionInfo: TransactionInfo!
+}
+type Data {
+  token: TokenDoc!
+  marketsSummary: [Market!]
+}
 
+input WhereTokenFilter {
+  collectionAddress: String
+  tokenId: String
+}
+input WhereFilter {
+  collectionAddress: String
+  tokens: WhereTokenFilter
+}
+  # input TokenInput {
+  #   name: String
+  #   address: String
+  #   tokenId: String
+  # }
+  input Paging {
+    after: String
+    limit: Int
+  }
+  type PagingOut {
+    hasNextPage: Boolean
+    endCursor: String
+  }
+type Token {
+  data: [Data!]
+  pageInfo: PagingOut
+}
   type Query {
     token(ID: ID!): Token!
-    getTokens(limit: Int): [Token]
+    tokens(paging: Paging, where: WhereFilter): Token!
   }
 
-  type Mutation {
-    createToken(token: TokenInput!): Token!
-  }
+  # type Mutation {
+  #   createToken(token: TokenInput!): Token!
+  # }
 `;
 export default typeDefs;
