@@ -20,7 +20,8 @@
     "graphql": "^16.6.0",
     "graphql-relay": "^0.10.0",
     "mongoose": "^7.0.3",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "redis": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",

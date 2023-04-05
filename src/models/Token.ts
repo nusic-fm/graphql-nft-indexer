@@ -2,7 +2,7 @@ import { model, Schema } from "mongoose";
 
 const tokenSchema = new Schema(
   {
-    _id: String,
+    // _id: String,
     token: Schema.Types.Mixed,
     marketsSummary: [Schema.Types.Mixed],
     sales: [Schema.Types.Mixed],
@@ -47,7 +47,7 @@ const tokenSchema = new Schema(
   // { _id: false }
 );
 
-export default model("Token", tokenSchema, "tokens_v1");
+export default model("Token", tokenSchema, "tokens");
 /*
 
     metadata: {

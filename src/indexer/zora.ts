@@ -46,6 +46,12 @@ export const getMusicNftsMetadataByColAddr = async (newTokens: string[]) => {
     } catch (e) {
       console.log(e.message);
       console.log("Error at: ", endCursor);
+      hasNextPage = true;
+      await new Promise((res) =>
+        setTimeout(() => {
+          res("");
+        }, 5000)
+      );
     }
   } while (hasNextPage);
 

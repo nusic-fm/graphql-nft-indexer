@@ -80,25 +80,43 @@ export const musicTokensInCollectionQuery = `#graphql
                 tokenStandard
                 tokenUrl
                 mintInfo {
-                originatorAddress
-                price {
-                    nativePrice {
-                    currency {
-                        address
-                        decimals
-                        name
+                    originatorAddress
+                    price {
+                        chainTokenPrice {
+                            raw
+                            decimal
+                            currency {
+                                address
+                                decimals
+                                name
+                            }
+                        }
+                        blockNumber
+                        nativePrice {
+                            currency {
+                                address
+                                decimals
+                                name
+                            }
+                            decimal
+                            raw
+                        }
+                        usdcPrice {
+                            decimal
+                            raw
+                            currency {
+                                address
+                                decimals
+                                name
+                            }
+                        }
                     }
-                    decimal
-                    raw
+                    toAddress
+                    mintContext {
+                        blockNumber
+                        transactionHash
+                        blockTimestamp
                     }
-                    blockNumber
-                }
-                toAddress
-                mintContext {
-                    blockNumber
-                    transactionHash
-                    blockTimestamp
-                }
                 }
                 owner
             }
@@ -106,24 +124,42 @@ export const musicTokensInCollectionQuery = `#graphql
                 collectionAddress
                 marketAddress
                 marketType
-                price {
-                chainTokenPrice {
-                    raw
-                    decimal
-                    currency {
-                    address
-                    decimals
-                    name
-                    }
-                }
-                blockNumber
-                }
                 status
                 tokenId
+                price {
+                    chainTokenPrice {
+                        raw
+                        decimal
+                        currency {
+                            address
+                            decimals
+                            name
+                        }
+                    }
+                    blockNumber
+                    chainTokenPrice {
+                        raw
+                        decimal
+                        currency {
+                            address
+                            decimals
+                            name
+                        }
+                    }
+                    usdcPrice {
+                        decimal
+                        raw
+                        currency {
+                            address
+                            decimals
+                            name
+                        }
+                    }
+                }
                 transactionInfo {
-                blockNumber
-                blockTimestamp
-                transactionHash
+                    blockNumber
+                    blockTimestamp
+                    transactionHash
                 }
             }
             sales {

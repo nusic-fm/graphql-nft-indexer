@@ -29,10 +29,33 @@ const server = new ApolloServer({
 // Ensure we wait for our server to start
 await server.start();
 
+const indexer = new MoralisIndexer();
+
+app.get("/", async (req, res) => {
+  res.json({
+    latestBlock: indexer.latestBlock,
+    totalBlocks: indexer.startBlock - indexer.latestBlock,
+    noOfNfts: await indexer.getTotalNftsCount(),
+  });
+});
+app.get("/start/:id?", async (req, res) => {
+  if (req.params.id) {
+    const blockNo = Number(req.params.id);
+    await indexer.start(blockNo);
+  } else {
+    await indexer.start();
+  }
+  res.json({
+    latestBlock: indexer.latestBlock,
+    totalBlocks: indexer.startBlock - indexer.latestBlock,
+    noOfNfts: await indexer.getTotalNftsCount(),
+  });
+});
+
 // Set up our Express middleware to handle CORS, body parsing,
 // and our expressMiddleware function.
 app.use(
-  "/",
+  "/graphql",
   cors(),
   // 50mb is the limit that `startStandaloneServer` uses, but you may configure this to suit your needs
   bodyParser.json({ limit: "50mb" }),
@@ -42,12 +65,12 @@ app.use(
     context: async ({ req }) => ({ token: req.headers.token }),
   })
 );
-const port = 8080;
 // Modified server startup
 await mongoose.connect(MONGODB);
 console.log("MongoDB connected");
+
+const port = Number(process.env.PORT) || 8080;
 await new Promise((resolve) =>
   httpServer.listen(port, undefined, undefined, () => resolve(0))
 );
-// new MoralisIndexer();
 console.log(`🚀 Server ready at http://localhost:${port}/`);
