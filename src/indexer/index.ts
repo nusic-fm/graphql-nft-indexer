@@ -92,7 +92,7 @@ export class MoralisIndexer {
                 );
                 console.log("metadataNodes length: ", metadataNodes.length);
                 if (metadataNodes.length) {
-                  const idNodes = metadataNodes.map(async (n) => {
+                  const idNodes = metadataNodes.map((n) => {
                     return {
                       ...n,
                       // _id: `${n.token.collectionAddress}:${n.token.tokenId}`,
