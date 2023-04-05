@@ -8,7 +8,7 @@ import redis from "redis";
 
 const REDIS_KEYS = {
   latestBlock: "latestBlock",
-  totalNftsCount: "totalNftsCount",
+  collectionAddress: "collectionAddress",
 };
 export class MoralisIndexer {
   public latestBlock = 0;
@@ -64,7 +64,7 @@ export class MoralisIndexer {
             .filter((value, index, array) => array.indexOf(value) === index);
           console.log("tokens length: ", _tokenAddresses.length);
           const replies = await this.redisClient.hmGet(
-            "collectionAddress",
+            REDIS_KEYS.collectionAddress,
             _tokenAddresses
           );
           const input = [];
@@ -105,7 +105,7 @@ export class MoralisIndexer {
                 await Promise.all(
                   newTokens.map(async (n) => {
                     await this.redisClient.hSet(
-                      "collectionAddress",
+                      REDIS_KEYS.collectionAddress,
                       n,
                       this.latestBlock
                     );
