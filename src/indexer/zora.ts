@@ -16,6 +16,7 @@ export const getMusicNftsMetadataByColAddr = async (newTokens: string[]) => {
     marketsSummary: any;
     sales: any;
   }[] = [];
+  let retries = 0;
   let hasNextPage = false;
   let endCursor: string | null = null;
   do {
@@ -41,17 +42,23 @@ export const getMusicNftsMetadataByColAddr = async (newTokens: string[]) => {
       } else {
         break;
       }
+      retries = 0;
       hasNextPage = response.data.data?.tokens.pageInfo.hasNextPage;
       endCursor = response.data.data?.tokens.pageInfo.endCursor;
     } catch (e) {
       console.log(e.message);
       console.log("Error at: ", endCursor);
-      hasNextPage = true;
-      await new Promise((res) =>
-        setTimeout(() => {
-          res("");
-        }, 10000)
-      );
+      if (retries === 20) {
+        hasNextPage = false;
+      } else {
+        retries += 1;
+        hasNextPage = true;
+        await new Promise((res) =>
+          setTimeout(() => {
+            res("");
+          }, 15000)
+        );
+      }
     }
   } while (hasNextPage);
 

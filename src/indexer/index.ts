@@ -87,7 +87,8 @@ export class MoralisIndexer {
                   await Token.insertMany(idNodes, { ordered: false });
                 }
                 await CollectionAddressModel.insertMany(
-                  newTokens.map((t) => ({ _id: t, blockNo: this.latestBlock }))
+                  newTokens.map((t) => ({ _id: t, blockNo: this.latestBlock })),
+                  { ordered: false }
                 );
                 console.log("Successful");
               } catch (e: any) {
