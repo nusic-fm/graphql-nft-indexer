@@ -50,7 +50,7 @@ export const getMusicNftsMetadataByColAddr = async (newTokens: string[]) => {
       await new Promise((res) =>
         setTimeout(() => {
           res("");
-        }, 5000)
+        }, 10000)
       );
     }
   } while (hasNextPage);

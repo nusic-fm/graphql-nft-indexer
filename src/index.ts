@@ -32,10 +32,14 @@ await server.start();
 const indexer = new MoralisIndexer();
 
 app.get("/", async (req, res) => {
+  const [config, noOfNfts] = await Promise.all([
+    indexer.getLatestBlock(),
+    indexer.getTotalNftsCount(),
+  ]);
   res.json({
-    latestBlock: indexer.latestBlock,
-    totalBlocks: indexer.startBlock - indexer.latestBlock,
-    noOfNfts: await indexer.getTotalNftsCount(),
+    latestBlock: config.latestBlock,
+    totalBlocks: config.totalBlocks,
+    noOfNfts,
   });
 });
 app.get("/start/:id?", async (req, res) => {
