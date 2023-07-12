@@ -7,10 +7,15 @@ type TokenDoc {
   collectionAddress: String,
   description: String,
   lastRefreshTime: String,
-  metadata: String,
+  metadata: NftMetadata,
   tokenStandard: String,
   tokenUrl: String,
   owner: String,
+}
+type NftMetadata {
+  image_url: String
+  name: String
+  animation_url: String
 }
 type TransactionInfo {
     blockNumber: String
@@ -57,6 +62,7 @@ type Token {
   type Query {
     token(ID: ID!): Token!
     tokens(paging: Paging, where: WhereFilter): Token!
+    collections(paging: Paging): Token!
   }
 
   # type Mutation {
