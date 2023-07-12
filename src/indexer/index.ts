@@ -8,9 +8,11 @@ import CollectionAddressModel from "../models/CollectionAddress.js";
 import mongoose from "mongoose";
 
 export class MoralisIndexer {
-  public latestBlock = 16500000;
-  public startBlock = 16500000;
+  public latestBlock = 17250000; // 16500000;
+  public startBlock = 17250000; //16500000;
   public breakCounter = 0;
+  public stopAt = 17675000; // 17250000
+  public stopProcess = false;
 
   async start(fromBlock?: number) {
     if (fromBlock) {
@@ -19,6 +21,7 @@ export class MoralisIndexer {
       const configInfo = await this.getLatestBlock();
       this.latestBlock = configInfo.latestBlock;
     }
+    this.stopProcess = false;
     this.startBlockCollectionWise();
   }
 
@@ -26,7 +29,11 @@ export class MoralisIndexer {
     const doc = await Config.findById(
       new mongoose.Types.ObjectId("642db1e411cc29a1e873fd54")
     );
-    return { latestBlock: doc.latestBlock, totalBlocks: doc.totalBlocks };
+    return {
+      latestBlock: doc.latestBlock,
+      totalBlocks: doc.totalBlocks,
+      processRunning: !this.stopProcess,
+    };
   }
 
   async getTotalNftsCount() {
@@ -34,18 +41,18 @@ export class MoralisIndexer {
   }
 
   async startBlockCollectionWise() {
-    while (this.latestBlock > 0) {
-      console.log(
-        "Block: ",
-        this.latestBlock,
-        "in progress... Total passed blocks:",
-        this.startBlock - this.latestBlock
-      );
+    while (this.latestBlock <= this.stopAt && this.stopProcess === false) {
+      //   console.log(
+      //     "Block: ",
+      //     this.latestBlock,
+      //     "in progress... Total passed blocks:",
+      //     this.latestBlock - this.startBlock
+      //   );
       await Config.findByIdAndUpdate(
         new mongoose.Types.ObjectId("642db1e411cc29a1e873fd54"),
         {
           latestBlock: this.latestBlock,
-          totalBlocks: this.startBlock - this.latestBlock,
+          totalBlocks: this.latestBlock - this.startBlock,
         }
       );
       try {
@@ -56,11 +63,11 @@ export class MoralisIndexer {
           const _tokenAddresses = nftTransfers
             .map((nft) => nft.token_address)
             .filter((value, index, array) => array.indexOf(value) === index);
-          console.log("tokens length: ", _tokenAddresses.length);
+          //   console.log("tokens length: ", _tokenAddresses.length);
           const input = await this.findNonExistingIds(_tokenAddresses);
-          console.log("input length: ", input.length);
+          //   console.log("input length: ", input.length);
           if (input.length === 0) {
-            this.latestBlock -= 1;
+            this.latestBlock += 1;
             continue;
           }
           const size = 100;
@@ -69,13 +76,13 @@ export class MoralisIndexer {
             output.push(input.slice(i, i + size));
           }
           for await (const newTokens of output) {
-            console.log("newTokens length: ", newTokens.length);
+            // console.log("newTokens length: ", newTokens.length);
             if (newTokens.length) {
               try {
                 const metadataNodes = await getMusicNftsMetadataByColAddr(
                   newTokens
                 );
-                console.log("metadataNodes length: ", metadataNodes.length);
+                // console.log("metadataNodes length: ", metadataNodes.length);
                 if (metadataNodes.length) {
                   const idNodes = metadataNodes.map((n) => {
                     return {
@@ -90,7 +97,7 @@ export class MoralisIndexer {
                   newTokens.map((t) => ({ _id: t, blockNo: this.latestBlock })),
                   { ordered: false }
                 );
-                console.log("Successful");
+                // console.log("Successful");
               } catch (e: any) {
                 await ErrorModel.create({
                   blockNo: this.latestBlock,
@@ -98,16 +105,16 @@ export class MoralisIndexer {
                   message: e.message,
                   customMessage: "Handling",
                 });
-                console.log("Handling Error: ", e.message);
+                // console.log("Handling Error: ", e.message);
               } finally {
-                this.latestBlock -= 1;
+                this.latestBlock += 1;
               }
             } else {
-              this.latestBlock -= 1;
+              this.latestBlock += 1;
             }
           }
         } else {
-          this.latestBlock -= 1;
+          this.latestBlock += 1;
         }
       } catch (e: any) {
         await ErrorModel.create({
@@ -117,7 +124,8 @@ export class MoralisIndexer {
           customMessage: `Error with moralis api, try: ${this.breakCounter}`,
         });
         if (this.breakCounter === 5) {
-          this.latestBlock = -1;
+          this.stopProcess = true;
+          //   this.latestBlock = -1;
         } else {
           this.breakCounter += 1;
         }

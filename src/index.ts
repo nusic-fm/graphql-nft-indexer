@@ -39,6 +39,7 @@ app.get("/", async (req, res) => {
   res.json({
     latestBlock: config.latestBlock,
     totalBlocks: config.totalBlocks,
+    processRunning: config.processRunning,
     noOfNfts,
   });
 });
