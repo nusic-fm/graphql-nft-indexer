@@ -13,9 +13,13 @@ type TokenDoc {
   owner: String,
 }
 type NftMetadata {
-  image_url: String
+  image: String
   name: String
   animation_url: String
+  genre: String
+  artist: String
+  bpm: String
+  duration: String
 }
 type TransactionInfo {
     blockNumber: String
@@ -38,9 +42,13 @@ input WhereTokenFilter {
   collectionAddress: String
   tokenId: String
 }
-input WhereFilter {
+input TokensWhereFilter {
   collectionAddress: String
   tokens: WhereTokenFilter
+  genre: String
+}
+input CollectionWhereFilter {
+  genre: String
 }
   # input TokenInput {
   #   name: String
@@ -61,8 +69,8 @@ type Token {
 }
   type Query {
     token(ID: ID!): Token!
-    tokens(paging: Paging, where: WhereFilter): Token!
-    collections(paging: Paging): Token!
+    tokens(paging: Paging, where: TokensWhereFilter): Token!
+    collections(paging: Paging, where: CollectionWhereFilter): Token!
   }
 
   # type Mutation {

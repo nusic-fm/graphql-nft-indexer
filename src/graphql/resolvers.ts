@@ -2,25 +2,62 @@ import { fromGlobalId, toGlobalId } from "graphql-relay";
 import Token from "../models/Token.js";
 import { paginateTokens } from "./utils.js";
 
+export type WhereTokensFilter = {
+  collectionAddress: String;
+  tokens: [
+    {
+      collectionAddress: String;
+      tokenId: String;
+    }
+  ];
+  genre: String;
+};
+
+type TokensInput = {
+  paging?: {
+    after?: string | null;
+    limit?: number | null;
+  };
+  where?: WhereTokensFilter;
+};
+
+type WhereCollectionFilter = {
+  genre: String;
+};
+
+type CollectionsInput = {
+  paging?: {
+    after?: string | null;
+    limit?: number | null;
+  };
+  where?: WhereCollectionFilter;
+};
+
 const resolvers = {
   Query: {
     async token(_, { ID }) {
       return await Token.findById(ID);
     },
-    async tokens(_, { paging, where }) {
+    async tokens(_, { paging, where }: TokensInput) {
       const { after, limit } = paging ?? { after: null, limit: 1 };
       const _limit = limit > 100 ? 100 : limit;
-      const result = await paginateTokens(_limit, after);
+      const result = await paginateTokens(_limit, where, after);
 
       return result;
     },
-    async collections(_, { paging }) {
+    async collections(_, { paging, where }: CollectionsInput) {
       const { after, limit } = paging ?? { after: null, limit: 10 };
       const _limit = limit > 100 ? 100 : limit;
       const queries = [];
       if (after) {
         const lastUser = await Token.findById(fromGlobalId(after).id);
         queries.push({ $match: { _id: { $gt: lastUser._id } } });
+      }
+      if (where) {
+        const { genre } = where;
+        if (genre) {
+          queries.push({ $match: { "token.metadata.genre": genre } });
+        }
       }
       queries.push(
         {

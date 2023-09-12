@@ -1,8 +1,26 @@
 import { fromGlobalId, toGlobalId } from "graphql-relay";
 import Token from "../models/Token.js";
+import { WhereTokensFilter } from "./resolvers.js";
 
-export const paginateTokens = async (limit, after) => {
+export const paginateTokens = async (
+  limit: number,
+  where: WhereTokensFilter,
+  after: string
+) => {
   const query: any = {};
+
+  if (where) {
+    const { collectionAddress, genre, tokens } = where;
+    if (collectionAddress) {
+      query["token.collectionAddress"] = collectionAddress;
+    }
+    if (genre) {
+      query["token.metadata.genre"] = genre;
+    }
+    if (tokens && tokens.length) {
+      // TODO
+    }
+  }
 
   // If 'after' is provided, create a query to start after the provided cursor
   if (after) {
