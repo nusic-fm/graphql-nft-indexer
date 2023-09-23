@@ -5,11 +5,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "compile": "tsc",
-    "prod": "npm run compile && node ./dist/index.js",
-    "start:ts": "tsc -w",
-    "start:js": "nodemon dist/index.js",
-    "start": "concurrently npm:start:*"
+    "build": "tsc",
+    "start": "node ./dist/index.js",
+    "gcp-build": "tsc -p .",
+    "dev:ts": "tsc -w",
+    "dev:js": "nodemon dist/index.js",
+    "dev": "concurrently npm:dev:*"
   },
   "author": "",
   "license": "ISC",

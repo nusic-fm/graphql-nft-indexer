@@ -1,16 +1,16 @@
 import { fromGlobalId, toGlobalId } from "graphql-relay";
 import Token from "../models/Token.js";
-import { paginateTokens } from "./utils.js";
+import { getGenreName, paginateTokens } from "./utils.js";
 
 export type WhereTokensFilter = {
-  collectionAddress: String;
+  collectionAddress: string;
   tokens: [
     {
-      collectionAddress: String;
-      tokenId: String;
+      collectionAddress: string;
+      tokenId: string;
     }
   ];
-  genre: String;
+  genre: string;
 };
 
 type TokensInput = {
@@ -22,7 +22,7 @@ type TokensInput = {
 };
 
 type WhereCollectionFilter = {
-  genre: String;
+  genre: string;
 };
 
 type CollectionsInput = {
@@ -56,7 +56,9 @@ const resolvers = {
       if (where) {
         const { genre } = where;
         if (genre) {
-          queries.push({ $match: { "token.metadata.genre": genre } });
+          queries.push({
+            $match: { "token.metadata.genre": getGenreName(genre) },
+          });
         }
       }
       queries.push(
@@ -71,6 +73,7 @@ const resolvers = {
         // { $skip: skip },
         { $limit: _limit + 1 }
       );
+
       const tokens = await Token.aggregate(queries);
 
       const collections = await Token.find({

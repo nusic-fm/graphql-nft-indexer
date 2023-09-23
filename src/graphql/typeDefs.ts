@@ -42,13 +42,29 @@ input WhereTokenFilter {
   collectionAddress: String
   tokenId: String
 }
+enum GenreTypes {
+  Bass_AND_House
+  Classical
+  Dance
+  Dance_AND_EDM
+  Drum_AND_Bass
+  Electronic
+  Folk_AND_SingerSongwriter
+  Hiphop_AND_Rap
+  House
+  Indie
+  Jazz_AND_Blues
+  Pop
+  Soundtrack
+  Triphop
+}
 input TokensWhereFilter {
   collectionAddress: String
   tokens: WhereTokenFilter
-  genre: String
+  genre: GenreTypes
 }
 input CollectionWhereFilter {
-  genre: String
+  genre: GenreTypes
 }
   # input TokenInput {
   #   name: String

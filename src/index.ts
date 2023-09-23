@@ -11,6 +11,11 @@ import mongoose from "mongoose";
 import typeDefs from "./graphql/typeDefs.js";
 import resolvers from "./graphql/resolvers.js";
 import { MoralisIndexer } from "./indexer/index.js";
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} from "@apollo/server/plugin/landingPage/default";
+
 // Required logic for integrating with Express
 const app = express();
 // Our httpServer handles incoming requests to our Express app.
@@ -24,8 +29,17 @@ const MONGODB = `mongodb+srv://${process.env.MONGODB_USR}:${process.env.MONGODB_
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  plugins: [
+    // Install a landing page plugin based on NODE_ENV
+    process.env.NODE_ENV === "production"
+      ? ApolloServerPluginLandingPageProductionDefault({
+          graphRef: process.env.GRAPH_REF,
+          footer: false,
+        })
+      : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
+  ],
 });
+
 // Ensure we wait for our server to start
 await server.start();
 

@@ -15,7 +15,7 @@ export const paginateTokens = async (
       query["token.collectionAddress"] = collectionAddress;
     }
     if (genre) {
-      query["token.metadata.genre"] = genre;
+      query["token.metadata.genre"] = getGenreName(genre);
     }
     if (tokens && tokens.length) {
       // TODO
@@ -53,4 +53,23 @@ export const paginateTokens = async (
     },
     data: tokens,
   };
+};
+
+export const getGenreName = (str: string) => {
+  switch (str) {
+    case "Bass_AND_House":
+      return "Bass House";
+    case "Dance_AND_EDM":
+      return "Dance & EDM";
+    case "Drum_AND_Bass":
+      return "Drum & Bass";
+    case "Folk_AND_SingerSongwriter":
+      return "Folk & Singer-Songwriter";
+    case "Hiphop_AND_Rap":
+      return "Hip-hop & Rap";
+    case "Jazz_AND_Blues":
+      return "Jazz & Blues";
+    default:
+      return str;
+  }
 };
